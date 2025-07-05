@@ -5,3 +5,24 @@ services:
     ports:
       - "5173:80"
     restart: unless-stopped
+
+  backend:
+    build: ./backend
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - ./backend/.env
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  db-data:

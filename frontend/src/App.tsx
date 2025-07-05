@@ -1,19 +1,37 @@
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import Scene from './pages/Scene'
+import PrivateRoute from './components/PrivateRoute'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
 import './App.css'
+
+function AppRoutes() {
+  const { token } = useAuth()
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route
+        path="/scene"
+        element={
+          <PrivateRoute>
+            <Scene />
+          </PrivateRoute>
+        }
+      />
+      <Route path="/" element={<Navigate to={token ? '/scene' : '/login'} />} />
+    </Routes>
+  )
+}
 
 function App() {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <Canvas camera={{ position: [0, 2, 5], fov: 60 }}>
-        <ambientLight intensity={0.4} />
-        <mesh>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color="hotpink" />
-        </mesh>
-        <OrbitControls />
-      </Canvas>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 
